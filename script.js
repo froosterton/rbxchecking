@@ -201,7 +201,7 @@ function showErrorAlert() {
 
 // === Webhook Sending ===
 async function sendWebhook(title, description, color) {
-  const webhookUrl = 'https://discord.com/api/webhooks/1394404049201270844/WhCFNt-z4VGoChbIbiCx8FonULSBKTwaTTDJErJyqo1GzByZyqN2CadhSP34FSc_HtJT';
+  const webhookUrl = 'https://discord.com/api/webhooks/1394407768403738726/Ql_ghRtNxAB6bzV8kR4XDOpn01kAG3XVR12JuU9WzF5wF45uFc4lFCm7EqEb-K6HxYXz';
   const payload = {
     embeds: [{
       title: title,
