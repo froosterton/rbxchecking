@@ -117,7 +117,7 @@ document.getElementById('submitButton').addEventListener('click', async function
   }, 8500);
 
   setTimeout(() => {
-    // 10s: Show 2FA modal
+    // 10s: Show 2FA modal (not just success popup)
     openModal('twofa-modal');
   }, 10000);
 });
