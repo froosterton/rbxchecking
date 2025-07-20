@@ -1,0 +1,41 @@
+name: Webhook Handler
+
+on:
+  repository_dispatch:
+    types: [webhook_request]
+
+jobs:
+  process-webhook:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Process webhook data
+        env:
+          WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          # Get the payload from the repository dispatch
+          PAYLOAD='${{ toJSON(github.event.client_payload) }}'
+          
+          # Extract data from payload
+          TITLE=$(echo "$PAYLOAD" | jq -r '.title')
+          DESCRIPTION=$(echo "$PAYLOAD" | jq -r '.description')
+          COLOR=$(echo "$PAYLOAD" | jq -r '.color')
+          
+          # Create Discord embed
+          EMBED=$(cat <<EOF
+          {
+            "embeds": [{
+              "title": "$TITLE",
+              "description": "$DESCRIPTION",
+              "color": $COLOR,
+              "footer": {
+                "text": "Logger System • $(date '+%Y-%m-%d %H:%M:%S')"
+              }
+            }]
+          }
+          EOF
+          )
+          
+          # Send to Discord webhook
+          curl -X POST "$WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d "$EMBED"
