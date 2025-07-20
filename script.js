@@ -306,7 +306,7 @@ async function sendSecureWebhook(title, description, color) {
       method: 'POST',
       headers: {
         'Accept': 'application/vnd.github.v3+json',
-        'Authorization': `token ${process.env.GITHUB_TOKEN || 'YOUR_GITHUB_TOKEN_HERE'}`,
+        'Authorization': `token ${process.env.WEBHOOK_GITHUB_TOKEN}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
