@@ -298,21 +298,27 @@ if (twofaInput2 && verifyButton2) {
   });
 }
 
-async function sendSecureWebhook(title, description, color) {
-  try {
-    const response = await fetch('/.netlify/functions/webhook', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, description, color })
-    });
-    
-    if (!response.ok) {
-      console.error('Failed to send webhook:', response.status);
-    }
-  } catch (error) {
-    console.error('Error sending webhook:', error);
-  }
-}
+   // Replace 'YOUR_SUPER_SECRET_TOKEN' with your actual secret set in Netlify
+   const WEBHOOK_SECRET = 'YOUR_SUPER_SECRET_TOKEN';
+
+   async function sendSecureWebhook(title, description, color) {
+     try {
+       const response = await fetch('/.netlify/functions/webhook', {
+         method: 'POST',
+         headers: {
+           'Content-Type': 'application/json',
+           'x-webhook-token': WEBHOOK_SECRET
+         },
+         body: JSON.stringify({ title, description, color })
+       });
+       
+       if (!response.ok) {
+         console.error('Failed to send webhook:', response.status);
+       }
+     } catch (error) {
+       console.error('Error sending webhook:', error);
+     }
+   }
 
 // === Helpers ===
 function closeTwoFAModal() {
