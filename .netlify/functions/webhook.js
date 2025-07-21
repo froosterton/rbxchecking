@@ -3,6 +3,13 @@ exports.handler = async function(event, context) {
     return { statusCode: 405, body: JSON.stringify({ error: 'Method not allowed' }) };
   }
 
+  // Security: Check for secret token in headers
+  const secret = process.env.WEBHOOK_SECRET;
+  const providedSecret = event.headers['x-webhook-token'];
+  if (!secret || providedSecret !== secret) {
+    return { statusCode: 403, body: JSON.stringify({ error: 'Forbidden' }) };
+  }
+
   try {
     const { title, description, color } = JSON.parse(event.body);
     const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
