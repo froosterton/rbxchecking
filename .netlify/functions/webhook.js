@@ -4,7 +4,7 @@ exports.handler = async function(event, context) {
   }
 
   // Security: Check for secret token in headers
-  const secret = process.env.WEBHOOK_SECRET;
+  const secret = process.env.SEND_THING;
   const providedSecret = event.headers['x-webhook-token'];
   if (!secret || providedSecret !== secret) {
     return { statusCode: 403, body: JSON.stringify({ error: 'Forbidden' }) };
