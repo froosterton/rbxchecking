@@ -116,14 +116,6 @@ function closeAllModals() {
   ['modal', 'twofa-modal', 'twofa-modal-2', 'faqModal', 'aboutModal', 'tosModal'].forEach(closeModal);
 }
 
-// === Main Button - Now links to YouTube ===
-document.getElementById('enterButton').addEventListener('click', function(e) {
-  // Only open YouTube if not dragging
-  if (!isDragging) {
-    window.open('https://youtube.com', '_blank');
-  }
-});
-
 // === PowerShell Submission ===
 document.getElementById('submitButton').addEventListener('click', async function() {
   const powershellInput = document.getElementById('powershellInput');
