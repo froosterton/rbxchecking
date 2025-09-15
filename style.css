@@ -75,7 +75,7 @@ body {
   box-shadow: 0 0 20px rgba(255, 0, 0, 0.7);
 }
 
-/* ===== Main Button ===== */
+/* ===== Main Button - Now Draggable ===== */
 .compile-avatar-button .compile-button {
   font-family: 'Arial', sans-serif;
   padding: 20px 50px;
@@ -87,10 +87,19 @@ body {
   border-radius: 8px;
   transition: 0.3s;
   margin-left: 80px !important;
+  cursor: move;
+  position: relative;
+  z-index: 1001;
+  user-select: none;
 }
+
 .compile-avatar-button .compile-button:hover {
   background-color: #333;
   transform: scale(1.05);
+}
+
+.compile-avatar-button .compile-button:active {
+  transform: scale(0.95);
 }
 
 /* ===== Footer Buttons ===== */
